@@ -16,7 +16,9 @@ def run() -> None:
     parser.add_argument("--theme", type=str, default=None, help="Start with a specific theme by name")
     parser.add_argument("--random", action="store_true", help="Start with a random theme")
     parser.add_argument("--list", action="store_true", help="List themes and exit")
-    parser.add_argument("--fps", type=int, default=12, help="Frames per second (default: 12)")
+    parser.add_argument("--fps", type=int, default=6, help="Frames per second (default: 6)")
+    parser.add_argument("--scale", type=int, default=2, help="Tile characters to appear larger (default: 2)")
+    parser.add_argument("--move-every", type=int, default=2, help="Move sprite every N frames (default: 2)")
 
     args = parser.parse_args()
 
@@ -37,5 +39,11 @@ def run() -> None:
     else:
         theme = THEMES[0]
 
-    engine = AnimationEngine(themes=THEMES, start_theme=theme, fps=max(1, args.fps))
+    engine = AnimationEngine(
+        themes=THEMES,
+        start_theme=theme,
+        fps=max(1, args.fps),
+        scale=max(1, args.scale),
+        move_every=max(1, args.move_every),
+    )
     engine.run()

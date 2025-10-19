@@ -60,11 +60,20 @@ MOVEMENTS: dict[str, MovementFn] = {
 
 
 class AnimationEngine:
-    def __init__(self, themes: Sequence[Theme], start_theme: Theme, fps: int = 12) -> None:
+    def __init__(
+        self,
+        themes: Sequence[Theme],
+        start_theme: Theme,
+        fps: int = 6,
+        scale: int = 2,
+        move_every: int = 2,
+    ) -> None:
         self.term = Terminal()
         self.themes: List[Theme] = list(themes)
         self.theme_index = self.themes.index(start_theme)
         self.fps = fps
+        self.scale = max(1, scale)
+        self.move_every = max(1, move_every)
         self.paused = False
         self.pos = Pos(5, 5)
         self.vel = Pos(1, 1)
@@ -117,21 +126,23 @@ class AnimationEngine:
                 print(t.bold_white_on_blue(status[: t.width - 1]).ljust(t.width - 1))
 
                 if not self.paused:
-                    # Move sprite
-                    mv = MOVEMENTS[theme.movement]
-                    self.pos = mv(t.width, t.height, self.pos, self.vel)
-                    if mv is move_bounce_box:
-                        # When bouncing, flip vel internally upon collision
-                        pass
+                    # Move sprite, but only every N frames to slow down motion
+                    if frame_index % self.move_every == 0:
+                        mv = MOVEMENTS[theme.movement]
+                        self.pos = mv(t.width, t.height, self.pos, self.vel)
 
                 # Render sprite
                 frame = theme.frames[frame_index % len(theme.frames)]
                 frame_index += 1
+                scaled_h = max(1, len(frame) * self.scale)
                 cx = _clamp(self.pos.x, 0, max(0, t.width - 1))
-                cy = _clamp(self.pos.y, 1, max(1, t.height - len(frame) - 1))
+                cy = _clamp(self.pos.y, 1, max(1, t.height - scaled_h - 1))
                 colorize = theme.colorize
                 for i, line in enumerate(frame):
-                    y = cy + i
+                    y0 = cy + i * self.scale
                     x = cx
-                    if y < t.height - 1:
-                        print(t.move(y, x) + colorize(line))
+                    tiled = (line * self.scale)
+                    for vrep in range(self.scale):
+                        y = y0 + vrep
+                        if y < t.height - 1:
+                            print(t.move(y, x) + colorize(tiled))
