@@ -13,6 +13,7 @@ Animated, colorful CLI character that dances, plays soccer, and generally has a 
   - `←`/`→`: previous/next theme
   - `r`: random theme
   - scale via `--scale` (default 2)
+  - slow frame changes via `--frame-every` (default 3)
 
 ## Requirements
 
@@ -54,10 +55,10 @@ List all themes:
 python -m python_dancer --list
 ```
 
-Adjust size and speed:
+Adjust size and speed (and frame pacing):
 
 ```bash
-python -m python_dancer --scale 3 --fps 5 --move-every 3
+python -m python_dancer --scale 3 --fps 5 --move-every 3 --frame-every 4
 ```
 
 ## Notes

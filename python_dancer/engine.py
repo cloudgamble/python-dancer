@@ -67,6 +67,7 @@ class AnimationEngine:
         fps: int = 6,
         scale: int = 2,
         move_every: int = 2,
+        frame_every: int = 3,
     ) -> None:
         self.term = Terminal()
         self.themes: List[Theme] = list(themes)
@@ -74,6 +75,7 @@ class AnimationEngine:
         self.fps = fps
         self.scale = max(1, scale)
         self.move_every = max(1, move_every)
+        self.frame_every = max(1, frame_every)
         self.paused = False
         self.pos = Pos(5, 5)
         self.vel = Pos(1, 1)
@@ -90,6 +92,7 @@ class AnimationEngine:
             print(t.clear)
             last_time = time.monotonic()
             frame_index = 0
+            frame_tick = 0
             while True:
                 # Input handling (non-blocking)
                 key = t.inkey(timeout=0)
@@ -133,7 +136,9 @@ class AnimationEngine:
 
                 # Render sprite
                 frame = theme.frames[frame_index % len(theme.frames)]
-                frame_index += 1
+                frame_tick += 1
+                if frame_tick % self.frame_every == 0:
+                    frame_index += 1
                 scaled_h = max(1, len(frame) * self.scale)
                 cx = _clamp(self.pos.x, 0, max(0, t.width - 1))
                 cy = _clamp(self.pos.y, 1, max(1, t.height - scaled_h - 1))

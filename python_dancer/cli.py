@@ -19,6 +19,7 @@ def run() -> None:
     parser.add_argument("--fps", type=int, default=6, help="Frames per second (default: 6)")
     parser.add_argument("--scale", type=int, default=2, help="Tile characters to appear larger (default: 2)")
     parser.add_argument("--move-every", type=int, default=2, help="Move sprite every N frames (default: 2)")
+    parser.add_argument("--frame-every", type=int, default=3, help="Advance animation frame every N draws (default: 3)")
 
     args = parser.parse_args()
 
@@ -45,5 +46,6 @@ def run() -> None:
         fps=max(1, args.fps),
         scale=max(1, args.scale),
         move_every=max(1, args.move_every),
+        frame_every=max(1, args.frame_every),
     )
     engine.run()
